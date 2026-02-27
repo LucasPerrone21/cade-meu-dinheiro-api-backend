@@ -1,0 +1,4 @@
+src/config/env.ts
+dist/
+node_modules/
+generated/

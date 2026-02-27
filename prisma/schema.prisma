@@ -1,0 +1,190 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+  moduleFormat    = "commonjs"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ─────────────────────────────────────────────
+// USER & CREDIT CARD
+// ─────────────────────────────────────────────
+
+model User {
+  id           String @id @default(uuid())
+  name         String
+  email        String @unique
+  hashPassword String
+
+  creditCards CreditCard[]
+  statements  Statement[]
+  expenses    Expense[]
+  categories  Category[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model CreditCard {
+  id             String @id @default(uuid())
+  userId         String
+  lastFourDigits String
+  closingDay     Int
+  dueDay         Int
+
+  user       User        @relation(fields: [userId], references: [id])
+  statements Statement[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ─────────────────────────────────────────────
+// STATEMENT
+// ─────────────────────────────────────────────
+
+model Statement {
+  id             String          @id @default(uuid())
+  userId         String          // desnormalizado para queries diretas por usuário
+  creditCardId   String
+  referenceMonth DateTime        // sempre salvar como primeiro dia do mês (ex: 2024-01-01)
+  filePath       String          // caminho/chave do PDF no storage
+
+  status StatementStatus @default(UPLOADED)
+
+  // Resposta bruta do Gemini — útil para debug e reprocessamento
+  rawAiResponse Json?
+
+  // Metadados extraídos pelo Gemini
+  totalAmount Decimal?  @db.Decimal(10, 2)
+  dueDate     DateTime?
+
+  user       User            @relation(fields: [userId], references: [id])
+  creditCard CreditCard      @relation(fields: [creditCardId], references: [id])
+  expenses   Expense[]
+  logs       ProcessingLog[]
+
+  createdAt   DateTime  @default(now())
+  processedAt DateTime?
+
+  @@unique([creditCardId, referenceMonth])
+  @@index([userId])
+  @@index([status])
+  @@index([creditCardId])
+}
+
+// ─────────────────────────────────────────────
+// EXPENSE
+// ─────────────────────────────────────────────
+
+model Expense {
+  id          String @id @default(uuid())
+  userId      String // desnormalizado para queries diretas por usuário
+  statementId String
+
+  date                  DateTime
+  descriptionOriginal   String   // texto exato da fatura
+  descriptionNormalized String   // normalizado pelo Gemini
+  merchantName          String?  // merchant identificado pelo Gemini
+
+  amount Decimal @db.Decimal(10, 2)
+
+  installmentCurrent Int?
+  installmentTotal   Int?
+
+  // Categoria definida pela IA vs corrigida manualmente pelo usuário
+  categoryAutoId   String
+  categoryManualId String?
+
+  // Hash para deduplicação na reingestão de faturas
+  hashUnique String
+
+  user           User      @relation(fields: [userId], references: [id])
+  statement      Statement @relation(fields: [statementId], references: [id])
+  categoryAuto   Category  @relation("AutoCategory", fields: [categoryAutoId], references: [id])
+  categoryManual Category? @relation("ManualCategory", fields: [categoryManualId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@unique([statementId, hashUnique])
+  @@index([userId])
+  @@index([statementId])
+  @@index([categoryAutoId])
+  @@index([date])
+}
+
+// ─────────────────────────────────────────────
+// CATEGORY
+// ─────────────────────────────────────────────
+
+model Category {
+  id   String @id @default(uuid())
+  name String
+  type CategoryType
+
+  // userId nulo = categoria de sistema (compartilhada entre todos)
+  // userId preenchido = categoria do usuário (isolada)
+  userId String?
+  user   User?   @relation(fields: [userId], references: [id])
+
+  autoExpenses   Expense[] @relation("AutoCategory")
+  manualExpenses Expense[] @relation("ManualCategory")
+
+  @@unique([name, type, userId])
+  @@index([userId])
+}
+
+enum CategoryType {
+  SYSTEM // categorias padrão do sistema, userId sempre nulo
+  USER   // categorias criadas pelo usuário, userId sempre preenchido
+}
+
+// ─────────────────────────────────────────────
+// PROCESSING LOG
+// ─────────────────────────────────────────────
+
+model ProcessingLog {
+  id          String @id @default(uuid())
+  statementId String
+
+  step    PipelineStep
+  status  LogStatus
+  message String?
+
+  executionTimeMs Int?
+
+  statement Statement @relation(fields: [statementId], references: [id])
+
+  createdAt DateTime @default(now())
+
+  @@index([statementId])
+}
+
+// ─────────────────────────────────────────────
+// ENUMS
+// ─────────────────────────────────────────────
+
+enum StatementStatus {
+  UPLOADED    // PDF recebido
+  PROCESSING  // enviado ao Gemini, aguardando resposta
+  PROCESSED   // despesas persistidas com sucesso
+  FAILED      // erro em alguma etapa
+}
+
+enum PipelineStep {
+  UPLOAD        // recebimento do PDF
+  AI_EXTRACTION // chamada ao Gemini (extração + normalização + categorização)
+  PERSISTENCE   // gravação das despesas no banco
+}
+
+enum LogStatus {
+  SUCCESS
+  ERROR
+}
