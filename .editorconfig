@@ -1,0 +1,15 @@
+root = true
+
+[*]
+end_of_line = lf
+charset = utf-8
+trim_trailing_whitespace = true
+insert_final_newline = true
+```
+Isso garante que **todo editor** (VS Code, WebStorm, etc.) use LF nesse projeto.
+
+---
+
+### 3. Criar um `.gitattributes` na raiz do projeto
+```
+* text=auto eol=lf
