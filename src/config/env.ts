@@ -30,15 +30,17 @@ const envSchema = z.object({
 type Env = z.infer<typeof envSchema>;
 
 let env: Env;
+let databaseURL: string;
 
 envSchema
   .parseAsync(process.env)
   .then((parsedEnv) => {
     env = parsedEnv;
+    databaseURL = `postgresql://${env.POSTGRES_USER}:${env.POSTGRES_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`;
   })
   .catch((e) => {
     console.error('❌ Variáveis de ambiente inválidas:', e);
     process.exit(1);
   });
 
-export { env };
+export { env, databaseURL };
