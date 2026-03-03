@@ -7,6 +7,8 @@ import AuthRequest from './interfaces/authRequest';
 import RefreshRequest from './interfaces/refreshRequest';
 import { JwtAuthGuard } from './guards/jwt.auth.guard';
 import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
+import ForgotPasswordDTO from './dtos/forgotPasswordDTO';
+import ResetPasswordDTO from './dtos/resetPasswordDTO';
 
 @Controller('auth')
 export class AuthController {
@@ -44,5 +46,20 @@ export class AuthController {
   async logout(@Req() req: AuthRequest) {
     await this.authService.logout(req.user.id);
     return { message: 'Logged out successfully' };
+  }
+
+  @Post('forgot-password')
+  async forgotPassword(@Body() body: ForgotPasswordDTO) {
+    await this.authService.requestPasswordReset(body.email);
+    return {
+      message:
+        'If an account with that email exists, a password reset link has been sent.',
+    };
+  }
+
+  @Post('reset-password')
+  async resetPassword(@Body() body: ResetPasswordDTO) {
+    await this.authService.resetPassword(body.token, body.password);
+    return { message: 'Password has been reset successfully' };
   }
 }

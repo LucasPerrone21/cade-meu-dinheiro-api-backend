@@ -25,6 +25,15 @@ const envSchema = z.object({
   JWT_REFRESH_EXPIRES: z.string().default('7d'),
 
   GEMINI_API_KEY: z.string().min(1),
+
+  SMTP_HOST: z.string().min(1),
+  SMTP_PORT: z.string(),
+  SMTP_USER: z.string().min(1),
+  SMTP_PASSWORD: z.string().min(1),
+
+  FRONTEND_URL: z.string().min(1),
+
+  PASSWORD_RESET_TOKEN_EXPIRES: z.string().default('10min'),
 });
 
 type Env = z.infer<typeof envSchema>;

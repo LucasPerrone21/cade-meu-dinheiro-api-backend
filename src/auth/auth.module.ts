@@ -7,9 +7,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
+import { EmailModule } from 'src/email/email.module';
 
 @Module({
-  imports: [UsersModule, JwtModule.register({ global: true })],
+  imports: [UsersModule, JwtModule.register({ global: true }), EmailModule],
   controllers: [AuthController],
   providers: [
     AuthService,

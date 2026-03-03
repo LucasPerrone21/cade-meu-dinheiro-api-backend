@@ -40,4 +40,33 @@ export class AuthRepository {
       },
     });
   }
+
+  async createPasswordResetToken(userId: string, tokenHash: string) {
+    const expiresAt = new Date(
+      Date.now() + ms(env.PASSWORD_RESET_TOKEN_EXPIRES as StringValue),
+    );
+    return await this.prismaService.passwordResetToken.create({
+      data: {
+        userId,
+        tokenHash,
+        expiresAt,
+      },
+    });
+  }
+
+  async findPasswordResetToken(tokenHash: string) {
+    return await this.prismaService.passwordResetToken.findUnique({
+      where: {
+        tokenHash,
+      },
+    });
+  }
+
+  async deletePasswordResetToken(tokenHash: string) {
+    return await this.prismaService.passwordResetToken.delete({
+      where: {
+        tokenHash,
+      },
+    });
+  }
 }

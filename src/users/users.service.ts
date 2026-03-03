@@ -51,4 +51,17 @@ export class UsersService {
 
     return user;
   }
+
+  async findByEmail(email: string) {
+    return await this.usersRepository.findByEmail(email);
+  }
+
+  async findById(id: string) {
+    return await this.usersRepository.findById(id);
+  }
+
+  async updatePassword(userId: string, newPassword: string) {
+    const hashPassword = await hash(newPassword, 10);
+    return await this.usersRepository.updatePassword(userId, hashPassword);
+  }
 }

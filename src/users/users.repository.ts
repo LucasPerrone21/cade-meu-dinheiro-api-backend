@@ -14,6 +14,14 @@ export default class UsersRepository {
     });
   }
 
+  async findById(id: string) {
+    return this.prismaService.user.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
   async create(data: SignUpDTO) {
     const { email, name, birthDate, password } = data;
 
@@ -23,6 +31,17 @@ export default class UsersRepository {
         name,
         birthDate,
         hashPassword: password,
+      },
+    });
+  }
+
+  async updatePassword(userId: string, hashPassword: string) {
+    return this.prismaService.user.update({
+      where: {
+        id: userId,
+      },
+      data: {
+        hashPassword,
       },
     });
   }
