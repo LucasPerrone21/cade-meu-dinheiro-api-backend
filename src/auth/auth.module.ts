@@ -8,9 +8,15 @@ import { LocalStrategy } from './strategies/local.strategy';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { RefreshJwtStrategy } from './strategies/refresh-jwt.strategy';
 import { EmailModule } from 'src/email/email.module';
+import { RedisModule } from 'src/redis/redis.module';
 
 @Module({
-  imports: [UsersModule, JwtModule.register({ global: true }), EmailModule],
+  imports: [
+    UsersModule,
+    JwtModule.register({ global: true }),
+    EmailModule,
+    RedisModule,
+  ],
   controllers: [AuthController],
   providers: [
     AuthService,

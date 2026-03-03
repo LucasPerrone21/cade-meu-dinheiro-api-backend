@@ -9,6 +9,7 @@ import { AuthRepository } from './auth.repository';
 import { compare } from 'bcrypt';
 import { createHash, randomBytes } from 'crypto';
 import { EmailService } from 'src/email/email.service';
+import { RedisService } from 'src/redis/redis.service';
 
 @Injectable()
 export class AuthService {
@@ -17,6 +18,7 @@ export class AuthService {
     private jwtService: JwtService,
     private authRepository: AuthRepository,
     private emailService: EmailService,
+    private redisService: RedisService,
   ) {}
 
   async signUp(data: SignUpDTO) {
@@ -75,7 +77,12 @@ export class AuthService {
     return this.generateTokens(userId, email);
   }
 
-  async logout(userId: string) {
+  async logout(userId: string, accessToken: string) {
+    const decoded = this.jwtService.decode(accessToken);
+    const ttl = decoded.exp - Math.floor(Date.now() / 1000);
+    if (ttl > 0) {
+      await this.redisService.setValue(`blacklist:${accessToken}`, '1', ttl);
+    }
     await this.authRepository.deleteRefreshToken(userId);
     return;
   }

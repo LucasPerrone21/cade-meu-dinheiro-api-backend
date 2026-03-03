@@ -34,6 +34,13 @@ const envSchema = z.object({
   FRONTEND_URL: z.string().min(1),
 
   PASSWORD_RESET_TOKEN_EXPIRES: z.string().default('10min'),
+
+  REDIS_HOST: z.string().min(1),
+  REDIS_PORT: z
+    .string()
+    .min(1)
+    .transform((v) => parseInt(v, 10)),
+  REDIS_PASSWORD: z.string().min(1),
 });
 
 type Env = z.infer<typeof envSchema>;
