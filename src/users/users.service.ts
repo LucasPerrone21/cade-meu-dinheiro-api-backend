@@ -1,7 +1,7 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import type SignUpDTO from '../auth/dtos/signUpDTO';
 import UsersRepository from './users.repository';
-import { hash } from 'bcrypt';
+import { hash, compare } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
@@ -34,5 +34,21 @@ export class UsersService {
       birthDate: formattedBirthDate,
       password: hashPassword,
     });
+  }
+
+  async validateUser(email: string, password: string) {
+    const user = await this.usersRepository.findByEmail(email);
+
+    if (!user) {
+      return null;
+    }
+
+    const isPasswordValid = await compare(password, user.hashPassword);
+
+    if (!isPasswordValid) {
+      return null;
+    }
+
+    return user;
   }
 }

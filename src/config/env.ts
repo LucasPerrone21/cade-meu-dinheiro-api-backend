@@ -19,10 +19,10 @@ const envSchema = z.object({
     .enum(['development', 'production', 'test'])
     .default('development'),
 
-  APP_JWT_SECRET: z.string().min(1),
-  APP_JWT_EXPIRES_IN: z.string().default('1h'),
-  APP_JWT_REFRESH_SECRET: z.string().min(1),
-  APP_JWT_REFRESH_EXPIRES_IN: z.string().default('7d'),
+  JWT_ACCESS_SECRET: z.string().min(1),
+  JWT_ACCESS_EXPIRES: z.string().default('1h'),
+  JWT_REFRESH_SECRET: z.string().min(1),
+  JWT_REFRESH_EXPIRES: z.string().default('7d'),
 
   GEMINI_API_KEY: z.string().min(1),
 });
