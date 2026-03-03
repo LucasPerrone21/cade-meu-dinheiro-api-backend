@@ -1,16 +1,19 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import SignInDTO from './dtos/signInDTO';
 import SignUpDTO from './dtos/signUpDTO';
 import { UsersService } from 'src/users/users.service';
 import { JwtService } from '@nestjs/jwt';
 import { env } from 'src/config/env';
 import type { StringValue } from 'ms';
+import { AuthRepository } from './auth.repository';
+import { compare } from 'bcrypt';
 
 @Injectable()
 export class AuthService {
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
+    private authRepository: AuthRepository,
   ) {}
 
   async signUp(data: SignUpDTO) {
@@ -46,6 +49,31 @@ export class AuthService {
       }),
     ]);
 
+    await this.authRepository.createRefreshToken(userId, refreshToken);
+
     return { accessToken, refreshToken };
+  }
+
+  async refreshTokens(userId: string, email: string, refreshToken: string) {
+    const storedToken = await this.authRepository.findRefreshToken(userId);
+
+    if (!storedToken || !storedToken.tokenHash) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    const isValidToken = await compare(refreshToken, storedToken.tokenHash);
+
+    if (!isValidToken) {
+      throw new UnauthorizedException('Invalid refresh token');
+    }
+
+    await this.authRepository.deleteRefreshToken(userId);
+
+    return this.generateTokens(userId, email);
+  }
+
+  async logout(userId: string) {
+    await this.authRepository.deleteRefreshToken(userId);
+    return;
   }
 }

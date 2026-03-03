@@ -1,9 +1,12 @@
-import { Body, Controller, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import SignUpDTO from './dtos/signUpDTO';
 import { AuthService } from './auth.service';
-import { LocalAuthGuard } from './guards/local-auth.guards';
+import { LocalAuthGuard } from './guards/local-auth.guard';
 import { Req } from '@nestjs/common';
 import AuthRequest from './interfaces/authRequest';
+import RefreshRequest from './interfaces/refreshRequest';
+import { JwtAuthGuard } from './guards/jwt.auth.guard';
+import { RefreshJwtAuthGuard } from './guards/refresh-jwt-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -18,5 +21,28 @@ export class AuthController {
   @Post('signin')
   async signin(@Req() req: AuthRequest) {
     return this.authService.generateTokens(req.user.id, req.user.email);
+  }
+
+  @UseGuards(RefreshJwtAuthGuard)
+  @Post('refresh')
+  async refresh(@Req() req: RefreshRequest) {
+    return this.authService.refreshTokens(
+      req.user.id,
+      req.user.email,
+      req.user.refreshToken,
+    );
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Get('profile')
+  getProfile(@Req() req: AuthRequest) {
+    return { id: req.user.id, email: req.user.email };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Req() req: AuthRequest) {
+    await this.authService.logout(req.user.id);
+    return { message: 'Logged out successfully' };
   }
 }
