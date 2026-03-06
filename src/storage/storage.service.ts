@@ -1,5 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import {
+  PutObjectCommand,
+  S3Client,
+  DeleteObjectCommand,
+} from '@aws-sdk/client-s3';
 import { env } from '../config/env';
 
 @Injectable()
@@ -25,6 +29,15 @@ export class StorageService {
         Key: key,
         Body: file,
         ContentType: mimeType,
+      }),
+    );
+  }
+
+  async deleteFile(key: string) {
+    await this.client.send(
+      new DeleteObjectCommand({
+        Bucket: env.MINIO_BUCKET_NAME,
+        Key: key,
       }),
     );
   }

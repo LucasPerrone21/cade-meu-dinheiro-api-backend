@@ -59,7 +59,7 @@ model Statement {
   userId         String          // desnormalizado para queries diretas por usuário
   creditCardId   String
   referenceMonth DateTime        // sempre salvar como primeiro dia do mês (ex: 2024-01-01)
-  filePath       String          // caminho/chave do PDF no storage
+  filePath       String?         // caminho/chave do PDF no storage
 
   status StatementStatus @default(UPLOADED)
 
@@ -111,7 +111,7 @@ model Expense {
   hashUnique String
 
   user           User      @relation(fields: [userId], references: [id])
-  statement      Statement @relation(fields: [statementId], references: [id])
+  statement      Statement @relation(fields: [statementId], references: [id], onDelete: Cascade) 
   categoryAuto   Category  @relation("AutoCategory", fields: [categoryAutoId], references: [id])
   categoryManual Category? @relation("ManualCategory", fields: [categoryManualId], references: [id])
 

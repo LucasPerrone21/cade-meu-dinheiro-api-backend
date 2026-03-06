@@ -6,5 +6,6 @@ import { CreditCardRepository } from './creditcard.repository';
 @Module({
   controllers: [CreditCardController],
   providers: [CreditCardService, CreditCardRepository],
+  exports: [CreditCardService],
 })
 export class CreditCardModule {}
