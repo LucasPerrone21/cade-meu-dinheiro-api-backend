@@ -41,6 +41,19 @@ const envSchema = z.object({
     .min(1)
     .transform((v) => parseInt(v, 10)),
   REDIS_PASSWORD: z.string().min(1),
+
+  MINIO_PORT: z
+    .string()
+    .min(1)
+    .transform((v) => parseInt(v, 10)),
+  MINIO_CONSOLE_PORT: z
+    .string()
+    .min(1)
+    .transform((v) => parseInt(v, 10)),
+  MINIO_ROOT_USER: z.string().min(1),
+  MINIO_ROOT_PASSWORD: z.string().min(1),
+  MINIO_BUCKET_NAME: z.string().min(1),
+  MINIO_HOST: z.string().min(1).url(),
 });
 
 const result = envSchema.safeParse(process.env);

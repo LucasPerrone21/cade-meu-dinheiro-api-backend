@@ -7,6 +7,8 @@ import { RedisModule } from './redis/redis.module';
 import { CreditCardModule } from './credit-card/credit-card.module';
 import { CategoryModule } from './category/category.module';
 import { ExpenseModule } from './expense/expense.module';
+import { StatementModule } from './statement/statement.module';
+import { StorageModule } from './storage/storage.module';
 
 @Module({
   imports: [
@@ -18,6 +20,8 @@ import { ExpenseModule } from './expense/expense.module';
     CreditCardModule,
     CategoryModule,
     ExpenseModule,
+    StatementModule,
+    StorageModule,
   ],
 })
 export class AppModule {}
