@@ -43,20 +43,12 @@ const envSchema = z.object({
   REDIS_PASSWORD: z.string().min(1),
 });
 
-type Env = z.infer<typeof envSchema>;
+const result = envSchema.safeParse(process.env);
 
-let env: Env;
-let databaseURL: string;
+if (!result.success) {
+  console.error('❌ Invalid environment variables:', result.error);
+  process.exit(1);
+}
 
-envSchema
-  .parseAsync(process.env)
-  .then((parsedEnv) => {
-    env = parsedEnv;
-    databaseURL = `postgresql://${env.POSTGRES_USER}:${env.POSTGRES_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`;
-  })
-  .catch((e) => {
-    console.error('❌ Variáveis de ambiente inválidas:', e);
-    process.exit(1);
-  });
-
-export { env, databaseURL };
+export const env = result.data;
+export const databaseURL = `postgresql://${env.POSTGRES_USER}:${env.POSTGRES_PASSWORD}@${env.POSTGRES_HOST}:${env.POSTGRES_PORT}/${env.POSTGRES_DB}`;
