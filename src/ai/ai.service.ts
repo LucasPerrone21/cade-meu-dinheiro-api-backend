@@ -45,8 +45,7 @@ Formato obrigatório:
       "installmentTotal": 3
     }
   ]
-}
-`;
+}`;
 
     const base64Pdf = pdfBuffer.toString('base64');
 
