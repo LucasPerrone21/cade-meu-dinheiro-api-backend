@@ -10,7 +10,7 @@ export class AiService {
   constructor() {
     this.genAI = new GoogleGenerativeAI(env.GEMINI_API_KEY);
     this.model = this.genAI.getGenerativeModel({
-      model: 'gemini-3.1-flash-lite-preview',
+      model: env.GEMINI_MODEL,
     });
   }
 
