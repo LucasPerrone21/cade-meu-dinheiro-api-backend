@@ -11,6 +11,7 @@ import { StatementModule } from './statement/statement.module';
 import { StorageModule } from './storage/storage.module';
 import { AiModule } from './ai/ai.module';
 import { ProcessingLogModule } from './processing-log/processing-log.module';
+import { InsightsModule } from './insights/insights.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ProcessingLogModule } from './processing-log/processing-log.module';
     StorageModule,
     AiModule,
     ProcessingLogModule,
+    InsightsModule,
   ],
 })
 export class AppModule {}
