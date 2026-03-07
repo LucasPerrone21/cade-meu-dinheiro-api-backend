@@ -23,6 +23,13 @@ export class CategoryRepository {
     });
   }
 
+  async findAllSystemCategories() {
+    return this.prismaService.category.findMany({
+      where: { type: 'SYSTEM' },
+      orderBy: { name: 'asc' },
+    });
+  }
+
   async findById(id: string) {
     return this.prismaService.category.findUnique({ where: { id } });
   }

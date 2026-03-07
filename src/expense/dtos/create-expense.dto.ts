@@ -12,6 +12,9 @@ export class CreateExpenseDto {
   @IsNotEmpty()
   descriptionOriginal: string;
 
+  @IsOptional()
+  descriptionNormalized?: string;
+
   @IsNumber({ maxDecimalPlaces: 2 })
   @Min(0)
   amount: number;

@@ -3,8 +3,10 @@ import {
   PutObjectCommand,
   S3Client,
   DeleteObjectCommand,
+  GetObjectCommand,
 } from '@aws-sdk/client-s3';
 import { env } from '../config/env';
+import { Readable } from 'node:stream';
 
 @Injectable()
 export class StorageService {
@@ -40,5 +42,21 @@ export class StorageService {
         Key: key,
       }),
     );
+  }
+
+  async downloadFile(key: string) {
+    const command = new GetObjectCommand({
+      Bucket: env.MINIO_BUCKET_NAME,
+      Key: key,
+    });
+    const response = await this.client.send(command);
+    const stream = response.Body as Readable;
+
+    const chunks: Buffer[] = [];
+    for await (const chunk of stream) {
+      chunks.push(Buffer.from(chunk));
+    }
+
+    return Buffer.concat(chunks);
   }
 }

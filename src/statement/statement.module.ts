@@ -4,9 +4,18 @@ import { StatementController } from './statement.controller';
 import { CreditCardModule } from 'src/credit-card/credit-card.module';
 import { StorageModule } from 'src/storage/storage.module';
 import { StatementRepository } from './statement.repositoty';
+import { ExpenseModule } from 'src/expense/expense.module';
+import { CategoryModule } from 'src/category/category.module';
+import { AiModule } from 'src/ai/ai.module';
 
 @Module({
-  imports: [CreditCardModule, StorageModule],
+  imports: [
+    CreditCardModule,
+    StorageModule,
+    AiModule,
+    CategoryModule,
+    ExpenseModule,
+  ],
   providers: [StatementService, StatementRepository],
   controllers: [StatementController],
 })

@@ -9,6 +9,7 @@ import { CategoryModule } from './category/category.module';
 import { ExpenseModule } from './expense/expense.module';
 import { StatementModule } from './statement/statement.module';
 import { StorageModule } from './storage/storage.module';
+import { AiModule } from './ai/ai.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { StorageModule } from './storage/storage.module';
     ExpenseModule,
     StatementModule,
     StorageModule,
+    AiModule,
   ],
 })
 export class AppModule {}

@@ -27,6 +27,10 @@ export class CategoryService {
     return this.categoryRepository.findAllByUserId(userId);
   }
 
+  async findAllSystemCategories() {
+    return this.categoryRepository.findAllSystemCategories();
+  }
+
   async findById(id: string, userId: string) {
     const category = await this.categoryRepository.findById(id);
     if (

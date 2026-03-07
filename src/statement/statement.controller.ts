@@ -31,6 +31,11 @@ export class StatementController {
     return this.statementService.createStatement(req.user.id, dto, file);
   }
 
+  @Post('process/:id')
+  async processStatement(@Param('id') id: string, @Req() req: AuthRequest) {
+    return this.statementService.processStatement(id, req.user.id);
+  }
+
   @Get('credit-card/:creditCardId')
   getAllByCreditCardId(
     @Param('creditCardId') creditCardId: string,

@@ -59,4 +59,19 @@ export class StatementRepository {
       },
     });
   }
+
+  async updateStatement(id: string, data) {
+    await this.prismaService.statement.update({
+      where: {
+        id,
+      },
+      data: {
+        status: 'PROCESSED',
+        totalAmount: data.totalAmount,
+        dueDate: data.dueDate,
+        rawAiResponse: data.rawAiResponse,
+        processedAt: data.processedAt,
+      },
+    });
+  }
 }
