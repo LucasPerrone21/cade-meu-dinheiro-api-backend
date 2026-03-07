@@ -89,4 +89,10 @@ export class ExpenseRepository {
       }),
     ]);
   }
+
+  async deleteByStatementId(statementId: string) {
+    return this.prismaService.expense.deleteMany({
+      where: { statementId },
+    });
+  }
 }

@@ -184,4 +184,11 @@ export class StatementService {
       throw error;
     }
   }
+
+  async reprocessStatement(statementId: string, userId: string) {
+    await this.findById(statementId, userId);
+    await this.expenseService.deleteByStatementId(statementId);
+    await this.statementRepository.updateStatus(statementId, 'PROCESSING');
+    await this.processStatement(statementId, userId);
+  }
 }
