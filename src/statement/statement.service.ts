@@ -6,6 +6,8 @@ import { StorageService } from 'src/storage/storage.service';
 import { AiService } from 'src/ai/ai.service';
 import { CategoryService } from 'src/category/category.service';
 import { ExpenseService } from 'src/expense/expense.service';
+import { ProcessingLogRepository } from 'src/processing-log/processing-log.repository';
+import { AiResponse } from 'src/ai/interfaces/ai-response.interface';
 
 @Injectable()
 export class StatementService {
@@ -16,6 +18,7 @@ export class StatementService {
     private storageService: StorageService,
     private aiService: AiService,
     private categoryService: CategoryService,
+    private processingLogRepository: ProcessingLogRepository,
   ) {}
 
   async createStatement(
@@ -81,22 +84,69 @@ export class StatementService {
     if (!statement.filePath) {
       throw new NotFoundException('No file associated with this statement');
     }
+
+    // Etapa 1 — Download do PDF
+    let buffer: Buffer;
     try {
-      const buffer = await this.downloadFile(statement.filePath);
-      const categories = await this.categoryService.findAllSystemCategories();
+      const start = Date.now();
+      buffer = await this.downloadFile(statement.filePath);
+      await this.processingLogRepository.createLog(
+        statementId,
+        'UPLOAD',
+        'SUCCESS',
+        undefined,
+        Date.now() - start,
+      );
+    } catch (error) {
+      await this.processingLogRepository.createLog(
+        statementId,
+        'UPLOAD',
+        'ERROR',
+        error.message as string,
+      );
+      await this.statementRepository.updateStatus(statementId, 'FAILED');
+      throw error;
+    }
+
+    const categories = await this.categoryService.findAllSystemCategories();
+
+    // Etapa 2 — Chamada ao Gemini
+    let aiResponse: AiResponse;
+    try {
+      const start = Date.now();
       const categoryNames = categories.map((c) => c.name);
-      const aiResponse = await this.aiService.extractExpensesFromPdf(
+      aiResponse = await this.aiService.extractExpensesFromPdf(
         buffer,
         categoryNames,
       );
+      await this.processingLogRepository.createLog(
+        statementId,
+        'AI_EXTRACTION',
+        'SUCCESS',
+        undefined,
+        Date.now() - start,
+      );
+    } catch (error) {
+      await this.processingLogRepository.createLog(
+        statementId,
+        'AI_EXTRACTION',
+        'ERROR',
+        error.message as string,
+      );
+      await this.statementRepository.updateStatus(statementId, 'FAILED');
+      throw error;
+    }
+
+    // Etapa 3 — Persistência
+    try {
+      const start = Date.now();
 
       for (const expense of aiResponse.expenses) {
         const category = categories.find(
           (c) => c.name === expense.categoryName,
         );
-        if (!category) {
-          continue;
-        }
+        if (!category) continue;
+
         await this.expenseService.create(userId, {
           statementId,
           date: new Date(expense.date),
@@ -115,7 +165,21 @@ export class StatementService {
         rawAiResponse: JSON.stringify(aiResponse),
         processedAt: new Date(),
       });
+
+      await this.processingLogRepository.createLog(
+        statementId,
+        'PERSISTENCE',
+        'SUCCESS',
+        undefined,
+        Date.now() - start,
+      );
     } catch (error) {
+      await this.processingLogRepository.createLog(
+        statementId,
+        'PERSISTENCE',
+        'ERROR',
+        error.message as string,
+      );
       await this.statementRepository.updateStatus(statementId, 'FAILED');
       throw error;
     }

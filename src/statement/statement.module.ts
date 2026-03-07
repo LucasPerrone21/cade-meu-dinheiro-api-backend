@@ -7,6 +7,7 @@ import { StatementRepository } from './statement.repositoty';
 import { ExpenseModule } from 'src/expense/expense.module';
 import { CategoryModule } from 'src/category/category.module';
 import { AiModule } from 'src/ai/ai.module';
+import { ProcessingLogModule } from 'src/processing-log/processing-log.module';
 
 @Module({
   imports: [
@@ -15,6 +16,7 @@ import { AiModule } from 'src/ai/ai.module';
     AiModule,
     CategoryModule,
     ExpenseModule,
+    ProcessingLogModule,
   ],
   providers: [StatementService, StatementRepository],
   controllers: [StatementController],

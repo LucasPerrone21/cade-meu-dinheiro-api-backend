@@ -10,6 +10,7 @@ import { ExpenseModule } from './expense/expense.module';
 import { StatementModule } from './statement/statement.module';
 import { StorageModule } from './storage/storage.module';
 import { AiModule } from './ai/ai.module';
+import { ProcessingLogModule } from './processing-log/processing-log.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AiModule } from './ai/ai.module';
     StatementModule,
     StorageModule,
     AiModule,
+    ProcessingLogModule,
   ],
 })
 export class AppModule {}
