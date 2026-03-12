@@ -3,15 +3,15 @@ import { IsInt, IsNotEmpty, Length, Matches, Max, Min } from 'class-validator';
 
 export default class CreateCreditCardDTO {
   @ApiProperty({
-    example: 'Cartão de Crédito Visa',
-    description: 'Nome do cartão de crédito',
+    example: 'Visa Gold',
+    description: 'Credit card name',
   })
   @IsNotEmpty()
   name: string;
 
   @ApiProperty({
     example: '1234',
-    description: 'Últimos 4 dígitos do cartão de crédito',
+    description: 'Last four digits of the credit card',
   })
   @IsNotEmpty()
   @Length(4, 4)
@@ -20,7 +20,7 @@ export default class CreateCreditCardDTO {
 
   @ApiProperty({
     example: 15,
-    description: 'Dia de fechamento do cartão de crédito',
+    description: 'Credit card closing day',
   })
   @IsInt()
   @Min(1)
@@ -29,7 +29,7 @@ export default class CreateCreditCardDTO {
 
   @ApiProperty({
     example: 5,
-    description: 'Dia de vencimento do cartão de crédito',
+    description: 'Credit card due day',
   })
   @IsInt()
   @Min(1)

@@ -32,13 +32,13 @@ export class CreditCardController {
   @Get(':id')
   @ApiResponse({
     status: 200,
-    description: 'Cartão de crédito encontrado com sucesso.',
+    description: 'Credit card found successfully.',
   })
   @ApiResponse({
     status: 404,
-    description: 'Cartão de crédito não encontrado.',
+    description: 'Credit card not found.',
   })
-  @ApiOperation({ summary: 'Buscar cartão de crédito por ID' })
+  @ApiOperation({ summary: 'Find a credit card by ID' })
   async findCreditCardById(@Param('id') id: string, @Req() req: AuthRequest) {
     return this.creditCardService.findCreditCardById(id, req.user.id);
   }
@@ -46,13 +46,13 @@ export class CreditCardController {
   @Get()
   @ApiResponse({
     status: 200,
-    description: 'Cartões de crédito encontrados com sucesso.',
+    description: 'Credit cards found successfully.',
   })
   @ApiResponse({
     status: 404,
-    description: 'Nenhum cartão de crédito encontrado para o usuário.',
+    description: 'No credit cards found for the user.',
   })
-  @ApiOperation({ summary: 'Buscar todos os cartões de crédito do usuário' })
+  @ApiOperation({ summary: 'Find all credit cards for the user' })
   async findAllCreditCardsByUserId(@Req() req: AuthRequest) {
     return this.creditCardService.findAllCreditCardsByUserId(req.user.id);
   }
@@ -60,13 +60,13 @@ export class CreditCardController {
   @Delete(':id')
   @ApiResponse({
     status: 200,
-    description: 'Cartão de crédito excluído com sucesso.',
+    description: 'Credit card deleted successfully.',
   })
   @ApiResponse({
     status: 404,
-    description: 'Cartão de crédito não encontrado.',
+    description: 'Credit card not found.',
   })
-  @ApiOperation({ summary: 'Excluir cartão de crédito por ID' })
+  @ApiOperation({ summary: 'Delete a credit card by ID' })
   async deleteCreditCardById(@Param('id') id: string, @Req() req: AuthRequest) {
     return this.creditCardService.deleteCreditCardById(id, req.user.id);
   }
@@ -74,13 +74,13 @@ export class CreditCardController {
   @Patch(':id')
   @ApiResponse({
     status: 200,
-    description: 'Cartão de crédito atualizado com sucesso.',
+    description: 'Credit card updated successfully.',
   })
   @ApiResponse({
     status: 404,
-    description: 'Cartão de crédito não encontrado.',
+    description: 'Credit card not found.',
   })
-  @ApiOperation({ summary: 'Atualizar cartão de crédito por ID' })
+  @ApiOperation({ summary: 'Update a credit card by ID' })
   @ApiBody({ type: UpdateCreditCardDTO })
   async updateCreditCardById(
     @Req() req: AuthRequest,
@@ -93,9 +93,9 @@ export class CreditCardController {
   @Post()
   @ApiResponse({
     status: 201,
-    description: 'Cartão de crédito criado com sucesso.',
+    description: 'Credit card created successfully.',
   })
-  @ApiOperation({ summary: 'Criar um novo cartão de crédito' })
+  @ApiOperation({ summary: 'Create a new credit card' })
   @ApiBody({ type: CreateCreditCardDTO })
   async createCreditCard(
     @Req() req: AuthRequest,
