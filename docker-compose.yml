@@ -45,6 +45,23 @@ services:
     command: server /data --console-address ":9001"
     volumes:
       - minio_data:/data
+    networks:
+      - app-network
+
+  app:
+    image: lucasperrone21/cade-meu-dinheiro-backend:latest
+    container_name: cade_meu_dinheiro_backend
+    restart: unless-stopped
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT}:3000" # ou a porta do seu app
+    networks:
+      - app-network
 
 volumes:
   postgres_data:
