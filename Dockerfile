@@ -5,9 +5,9 @@ WORKDIR /app
 COPY package*.json ./
 COPY prisma ./prisma
 
-RUN npm ci                        # instala tudo
-RUN npx prisma generate           # gera o client
-RUN npm prune --production        # remove devDependencies depois
+RUN npm ci                        
+RUN npx prisma generate           
+RUN npm prune --production       
 
 COPY . .
 
