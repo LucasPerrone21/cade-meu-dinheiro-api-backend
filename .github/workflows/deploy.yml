@@ -45,4 +45,4 @@ jobs:
             cd /media/DockerGeneral/cade-meu-dinheiro-backend
             docker-compose pull
             docker-compose run --rm app npx prisma migrate deploy
-            docker-compose up -d
+            docker-compose up -d --force-recreate
