@@ -58,4 +58,4 @@ jobs:
             docker-compose pull
             docker-compose up -d --force-recreate
             sleep 20
-            docker-compose exec -T app npx prisma migrate deploy
+            docker exec cade_meu_dinheiro_backend npx prisma migrate deploy
