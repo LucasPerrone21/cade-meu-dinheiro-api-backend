@@ -8,10 +8,13 @@ COPY prisma ./prisma
 
 RUN npm ci                        
 RUN npx prisma generate           
-RUN npm prune --production       
 
 COPY . .
 
-EXPOSE 3000
+RUN npm run build
+
+RUN npm prune --production       
+
+EXPOSE 64242
 
 CMD ["node", "dist/main.js"]
