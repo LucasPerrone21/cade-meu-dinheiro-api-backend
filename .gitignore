@@ -3,7 +3,7 @@
 /node_modules
 /build
 /generated
-/primsa/generated
+/prisma/generated
 
 # Logs
 logs
