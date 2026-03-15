@@ -30,10 +30,22 @@ jobs:
     runs-on: ubuntu-latest
     needs: build-and-push
     steps:
+      - name: Checkout do código
+        uses: actions/checkout@v4
+
       - name: Conecta ao Tailscale
         uses: tailscale/github-action@v2
         with:
           authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
+
+      - name: Copia docker-compose para VPS
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SERVER_SSH_KEY }}
+          source: 'docker-compose.yml'
+          target: '/media/DockerGeneral/cade-meu-dinheiro-backend'
 
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1
@@ -44,5 +56,5 @@ jobs:
           script: |
             cd /media/DockerGeneral/cade-meu-dinheiro-backend
             docker-compose pull
-            docker-compose run --rm app npx prisma migrate deploy
             docker-compose up -d --force-recreate
+            docker-compose exec -T app npx prisma migrate deploy
