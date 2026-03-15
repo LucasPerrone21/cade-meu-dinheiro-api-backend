@@ -59,7 +59,7 @@ services:
     env_file:
       - .env
     ports:
-      - "${APP_PORT}:3000" # ou a porta do seu app
+      - "${APP_PORT}:${APP_PORT}" # ou a porta do seu app
     networks:
       - app-network
 
