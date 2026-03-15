@@ -19,6 +19,13 @@
     "forceConsistentCasingInFileNames": true,
     "noImplicitAny": false,
     "strictBindCallApply": false,
-    "noFallthroughCasesInSwitch": false
+    "noFallthroughCasesInSwitch": false,
+    "paths": {
+      "generated/prisma/client": ["./prisma/generated/prisma/client"],
+      "generated/prisma/enums": ["./prisma/generated/prisma/enums"],
+      "generated/prisma/internal/class": [
+        "./prisma/generated/prisma/internal/class"
+      ]
+    }
   }
 }
