@@ -12,6 +12,7 @@ import { StorageModule } from './storage/storage.module';
 import { AiModule } from './ai/ai.module';
 import { ProcessingLogModule } from './processing-log/processing-log.module';
 import { InsightsModule } from './insights/insights.module';
+import { HelperModule } from './helper/helper.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { InsightsModule } from './insights/insights.module';
     AiModule,
     ProcessingLogModule,
     InsightsModule,
+    HelperModule,
   ],
 })
 export class AppModule {}
