@@ -33,18 +33,68 @@ jobs:
       - name: Checkout do código
         uses: actions/checkout@v4
 
+      - name: Criar arquivo .env
+        run: |
+          cat << EOF > .env
+          # PostgreSQL Configuration
+          POSTGRES_USER=${{ secrets.POSTGRES_USER }}
+          POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }}
+          POSTGRES_HOST=${{ secrets.POSTGRES_HOST }}
+          POSTGRES_PORT=${{ secrets.POSTGRES_PORT }}
+          POSTGRES_DB=${{ secrets.POSTGRES_DB }}
+
+          # Application Configuration
+          APP_PORT=${{ secrets.APP_PORT }}
+          APP_ENVIRONMENT=production
+
+          # JWT Configuration
+          JWT_ACCESS_EXPIRES=${{ secrets.JWT_ACCESS_EXPIRES }}
+          JWT_ACCESS_SECRET=${{ secrets.JWT_ACCESS_SECRET }}
+          JWT_REFRESH_EXPIRES=${{ secrets.JWT_REFRESH_EXPIRES }}
+          JWT_REFRESH_SECRET=${{ secrets.JWT_REFRESH_SECRET }}
+
+          # Gemini API Configuration
+          GEMINI_API_KEY=${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL=${{ secrets.GEMINI_MODEL }}
+
+          # SMTP Server Configuration
+          SMTP_HOST=${{ secrets.SMTP_HOST }}
+          SMTP_PORT=${{ secrets.SMTP_PORT }}
+          SMTP_USER=${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD=${{ secrets.SMTP_PASSWORD }}
+
+          # Frontend URL for password reset link
+          FRONTEND_URL=${{ secrets.FRONTEND_URL }}
+
+          # Password reset token expiration time
+          PASSWORD_RESET_TOKEN_EXPIRES=${{ secrets.PASSWORD_RESET_TOKEN_EXPIRES }}
+
+          # REDIS Configuration
+          REDIS_HOST=${{ secrets.REDIS_HOST }}
+          REDIS_PORT=${{ secrets.REDIS_PORT }}
+          REDIS_PASSWORD=${{ secrets.REDIS_PASSWORD }}
+
+          # MinIO Configuration
+          MINIO_HOST=${{ secrets.MINIO_HOST }}
+          MINIO_PORT=${{ secrets.MINIO_PORT }}
+          MINIO_CONSOLE_PORT=${{ secrets.MINIO_CONSOLE_PORT }}
+          MINIO_ROOT_USER=${{ secrets.MINIO_ROOT_USER }}
+          MINIO_ROOT_PASSWORD=${{ secrets.MINIO_ROOT_PASSWORD }}
+          MINIO_BUCKET_NAME=${{ secrets.MINIO_BUCKET_NAME }}
+          EOF
+
       - name: Conecta ao Tailscale
         uses: tailscale/github-action@v2
         with:
           authkey: ${{ secrets.TAILSCALE_AUTH_KEY }}
 
-      - name: Copia docker-compose para VPS
+      - name: Copia arquivos para VPS
         uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.SERVER_HOST }}
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SERVER_SSH_KEY }}
-          source: 'docker-compose.yml'
+          source: 'docker-compose.yml,.env'
           target: '/media/DockerGeneral/cade-meu-dinheiro-backend'
 
       - name: Deploy via SSH
